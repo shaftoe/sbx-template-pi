@@ -1,0 +1,60 @@
+name: Build & Publish
+
+on:
+  push:
+    branches:
+      - master
+  schedule:
+    - cron: "0 6 * * 1" # every Monday 06:00 UTC
+  workflow_dispatch:
+    inputs:
+      pi_version:
+        description: 'PI version to build (default: latest)'
+        required: false
+        default: 'latest'
+
+env:
+  REGISTRY: ghcr.io
+  IMAGE_NAME: ${{ github.repository }}
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    strategy:
+      matrix:
+        include:
+          - variant: shell-docker
+            tag_suffix: ""
+          - variant: shell
+            tag_suffix: "-slim"
+    permissions:
+      contents: read
+      packages: write
+
+    steps:
+      - uses: actions/checkout@v6
+
+      - uses: docker/setup-buildx-action@v4
+
+      - name: Log in to GHCR
+        if: github.event_name != 'pull_request'
+        uses: docker/login-action@v4
+        with:
+          registry: ${{ env.REGISTRY }}
+          username: ${{ github.actor }}
+          password: ${{ secrets.GITHUB_TOKEN }}
+
+      - name: Build & push (merge / schedule / dispatch)
+        if: github.event_name != 'pull_request'
+        uses: docker/build-push-action@v7
+        with:
+          context: .
+          build-args: |
+            BASE_VARIANT=${{ matrix.variant }}
+            PI_VERSION=${{ github.event.inputs.pi_version || 'latest' }}
+          platforms: linux/amd64,linux/arm64
+          push: true
+          tags: |
+            ${{ env.REGISTRY }}/${{ env.IMAGE_NAME }}:latest${{ matrix.tag_suffix }}
+          cache-from: type=gha
+          cache-to: type=gha,mode=max
