@@ -4,6 +4,8 @@ on:
   push:
     branches:
       - master
+    paths:
+      - '**/Dockerfile*'
   schedule:
     - cron: "0 6 * * 1" # every Monday 06:00 UTC
   workflow_dispatch:

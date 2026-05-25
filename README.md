@@ -53,24 +53,9 @@ sbx secret set GOOGLE_API_KEY=...
 - **fd-find** — pre-installed so pi doesn't download it at first boot
 - **Pi** — `@earendil-works/pi-coding-agent` installed globally for the `agent` user
 
-## Build Locally
-
-```bash
-# Default variant (with Docker-in-Docker)
-just build
-
-# Slim variant (no Docker)
-just build-slim
-
-# Pin a specific pi version
-just build shell-docker 0.7.0
-```
-
-All recipes accept `base_variant` and `pi_version` parameters — see `just --list`.
-
 ## CI/CD
 
-A single [workflow](.github/workflows/build.yml) handles everything:
+A single [workflow](.github/workflows/build-and-publish.yml) handles everything:
 
 | Trigger | Behavior |
 |---------|----------|
@@ -82,29 +67,6 @@ A single [workflow](.github/workflows/build.yml) handles everything:
 ### Renovate
 
 [Renovate](renovate.json) watches the pi npm package and opens PRs to bump the default `PI_VERSION` in the Dockerfile. Runs on a weekly schedule.
-
-## Kit vs Template
-
-| | [sbx-kits-contrib/pi](https://github.com/docker/sbx-kits-contrib/tree/main/pi) (Kit) | This project (Template) |
-|---|---|---|
-| Install time | Every sandbox creation | Once at image build |
-| Startup speed | Slow (~30-60s npm install) | Instant |
-| Network needs at create | registry.npmjs.org | None |
-| Updates | Always latest | Rebuild image |
-| Network policy | Via `spec.yaml` | Via `sbx policy` CLI |
-
-## Project Structure
-
-```
-.
-├── Dockerfile                   # Multi-variant image definition
-├── justfile                     # Task runner for common workflows
-├── renovate.json                # Renovate config for pi version bumps
-├── test/
-│   └── smoke-test.sh           # Basic image validation
-└── .github/workflows/
-    └── build.yml               # Build, test, publish pipeline
-```
 
 ## License
 
