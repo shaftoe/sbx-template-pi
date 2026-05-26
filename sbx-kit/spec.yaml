@@ -1,0 +1,73 @@
+# sbx-template-pi kit — Docker Sandbox kit for the Pi coding agent
+#
+# Usage:
+#   sbx run --kit ./sbx-kit/ sbx-template-pi
+#
+# Prerequisites — set ZAI_API_KEY on your host:
+#   export ZAI_API_KEY=zai-...
+#   # or store it permanently:
+#   sbx secret set ZAI_API_KEY=zai-...
+
+schemaVersion: "1"
+kind: agent
+name: sbx-template-pi
+displayName: sbx-template-pi (Pi coding agent)
+description: >
+  Self-contained Pi coding agent image from GHCR with ZAI_API_KEY passthrough.
+
+# ---------------------------------------------------------------------------
+# Image — pre-built Pi image from GitHub Container Registry
+# ---------------------------------------------------------------------------
+agent:
+  image: ghcr.io/shaftoe/sbx-template-pi:latest
+  aiFilename: AGENTS.md
+  persistence: persistent
+  entrypoint:
+    run: [pi]
+
+# ---------------------------------------------------------------------------
+# Network — allow the ZAI API and related domains
+# ---------------------------------------------------------------------------
+network:
+  allowedDomains:
+    - api.z.ai
+    - "*.z.ai"
+    - "pi.dev"
+    - "*.pi.dev"
+  serviceDomains:
+    api.z.ai: zai
+  serviceAuth:
+    zai:
+      # The ZAI provider in pi typically sends ZAI_API_KEY as a Bearer token
+      # in the Authorization header.  Configure the proxy to swap the
+      # sentinel value for the real credential before the request leaves
+      # the sandbox.
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+
+# ---------------------------------------------------------------------------
+# Credentials — read ZAI_API_KEY from host environment
+# ---------------------------------------------------------------------------
+credentials:
+  sources:
+    zai:
+      env:
+        - ZAI_API_KEY
+
+# ---------------------------------------------------------------------------
+# Environment — ZAI_API_KEY is set to "proxy-managed" inside the sandbox.
+# The proxy intercepts outbound requests and replaces it with the real key
+# in the Authorization header (see serviceAuth above).
+# ---------------------------------------------------------------------------
+environment:
+  proxyManaged:
+    - ZAI_API_KEY
+
+# ---------------------------------------------------------------------------
+# Commands — none needed; everything is baked into the image.
+# ---------------------------------------------------------------------------
+# commands:
+#   install:
+#     - command: "pi --version"
+#       user: "1000"
+#       description: Verify pi is installed

@@ -22,12 +22,25 @@ sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
 
 Once inside the sandbox, run `pi` to start the coding agent.
 
+### Using the Kit (agent kit — self-contained)
+
+The [`sbx-kit/`](sbx-kit/) directory provides an example Docker Sandbox [kit](https://docs.docker.com/ai/sandboxes/customize/kits/) that pulls the GHCR image and securely passes `ZAI_API_KEY` through the sandbox proxy.
+
+```bash
+# Prerequisite: set ZAI_API_KEY on your host
+export ZAI_API_KEY=zai-...
+
+# Run with the kit (validates, pulls image, boots pi)
+sbx run --kit ./sbx-kit/ sbx-template-pi
+```
+
 ### Build & Run Locally
 
 ```bash
 # Using [just](https://just.systems):
 just deploy          # build + load into sbx
 just run             # sbx run --template sbx-template-pi shell
+just kit-run         # sbx run --kit ./sbx-kit/ sbx-template-pi
 
 # Or manually:
 docker build -t sbx-template-pi .
@@ -39,6 +52,9 @@ sbx run --template sbx-template-pi shell
 ## Credentials
 
 ```bash
+# ZAI provider (example used by the kit)
+export ZAI_API_KEY=zai-...
+
 # Anthropic (default provider)
 sbx secret set ANTHROPIC_API_KEY=sk-ant-...
 

@@ -41,6 +41,18 @@ deploy base_variant=BASE_VARIANT pi_version=PI_VERSION:
 run:
     sbx run --template {{image_name}} shell
 
+# Run sandbox using the agent kit (self-contained, with ZAI_API_KEY proxy)
+kit-run:
+    sbx run --kit ./sbx-kit/ sbx-template-pi
+
+# Validate the kit spec
+kit-validate:
+    sbx kit validate ./sbx-kit/
+
+# Inspect what the kit provides
+kit-inspect:
+    sbx kit inspect ./sbx-kit/
+
 # Full cycle: build, load, run
 test base_variant=BASE_VARIANT pi_version=PI_VERSION:
     @just deploy {{base_variant}} {{pi_version}}
