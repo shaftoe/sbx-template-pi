@@ -71,7 +71,7 @@ commands:
   install:
     - command: "pi install npm:@alexanderfortin/pi-zai-usage"
       user: "1000"
-      description: "Install pi Z.ai extension"
+      description: "Install pi-zai-usage extension if not already present"
 
 # ---------------------------------------------------------------------------
 # Memory — sandbox orientation
