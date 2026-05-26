@@ -44,10 +44,17 @@ USER root
 RUN apt-get purge -y nodejs && apt-get autoremove -y \
     && rm -rf /var/lib/apt/lists/*
 
+# Upgrade all distro packages so we ship an up-to-date image
+RUN apt-get update \
+    && apt-get dist-upgrade -y \
+    && rm -rf /var/lib/apt/lists/*
+
 # Copy Node runtime for the TARGET platform
 COPY --from=node-bin /usr/local/bin/node /usr/bin/node
+COPY --from=node-bin /usr/local/lib/node_modules/npm /usr/local/lib/node_modules/npm
+RUN ln -sf ../lib/node_modules/npm/bin/npm-cli.js /usr/local/bin/npm
 
-# Copy pi (npm not needed at runtime)
+# Copy pi
 COPY --from=builder /usr/local/lib/node_modules/@earendil-works /usr/local/lib/node_modules/@earendil-works
 RUN ln -sf /usr/local/lib/node_modules/@earendil-works/pi-coding-agent/dist/cli.js /usr/local/bin/pi
 
@@ -62,5 +69,10 @@ RUN apt-get update \
 # Stamp the installed version for downstream tooling
 RUN node /usr/local/lib/node_modules/@earendil-works/pi-coding-agent/dist/cli.js --version > /home/agent/.pi-image-version \
     && chown agent:agent /home/agent/.pi-image-version
+
+# Suppress Node.js UNDICI-EHPA experimental warning caused by sandbox proxy
+# env vars (HTTP_PROXY / HTTPS_PROXY). EnvHttpProxyAgent works fine — it's just
+# flagged as experimental in Node v22.
+ENV NODE_OPTIONS="--disable-warning=UNDICI-EHPA"
 
 USER agent

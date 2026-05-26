@@ -15,7 +15,7 @@ Images are pushed to GitHub Container Registry on every merge to `main`, weekly 
 
 ## Quick Start
 
-### Using the Generic Kit (any provider)
+### Using the Generic Kit (pre-baked GHCR image, most providers)
 
 The [`sbx-kit/`](sbx-kit/) directory provides a **generic agent kit** that works with Anthropic, OpenAI, DeepSeek, Kimi, Mistral, z.ai, and more. Pi is installed at sandbox creation via npm.
 
@@ -30,7 +30,7 @@ sbx run --kit ./sbx-kit/ sbx-template-pi
 sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kit" sbx-template-pi
 ```
 
-### Using the z.ai Kit (pre-baked image)
+### Using the z.ai Kit
 
 The [`sbx-kits/pi-zai/`](sbx-kits/pi-zai/) kit uses the pre-baked GHCR image with `ZAI_API_KEY` passthrough and installs pi extensions.
 
@@ -39,10 +39,10 @@ The [`sbx-kits/pi-zai/`](sbx-kits/pi-zai/) kit uses the pre-baked GHCR image wit
 export ZAI_API_KEY=zai-...
 
 # Run from a local clone
-sbx run --kit ./sbx-kits/pi-zai/ pi-zai
+sbx run --kit ./sbx-kits/pi-zai/ pi
 
 # ...or directly from the GitHub repo
-sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi-zai
+sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi
 ```
 
 ### Stacking the Extras Mixin
