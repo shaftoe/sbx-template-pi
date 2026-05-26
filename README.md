@@ -6,7 +6,7 @@ Pi is baked into the image along with its Node.js runtime and tools — sandboxe
 
 ## Published Tags
 
-Images are pushed to GitHub Container Registry on every merge to `main`, weekly via cron, and on manual dispatch.
+Images are pushed to GitHub Container Registry on every push to `master` that changes the Dockerfile, weekly via cron, and on manual dispatch.
 
 | Tag | Base | Description |
 |-----|------|-------------|
@@ -121,8 +121,7 @@ A single [workflow](.github/workflows/build-and-publish.yml) handles everything:
 
 | Trigger | Behavior |
 |---------|----------|
-| PR to `main` | Build + smoke test (no push) |
-| Push to `main` | Build multi-arch + push to GHCR + version-pinned tag |
+| Push to `master` (Dockerfile changes) | Build multi-arch + push to GHCR |
 | Weekly schedule | Same as push — picks up latest pi & base image |
 | Manual dispatch | Same as push, with optional `pi_version` override |
 
