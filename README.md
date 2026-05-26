@@ -30,8 +30,11 @@ The [`sbx-kit/`](sbx-kit/) directory provides an example Docker Sandbox [kit](ht
 # Prerequisite: set ZAI_API_KEY on your host
 export ZAI_API_KEY=zai-...
 
-# Run with the kit (validates, pulls image, boots pi)
+# Run with the kit from a local clone (validates, pulls image, boots pi)...
 sbx run --kit ./sbx-kit/ sbx-template-pi
+
+# ...or directly from the GitHub repo
+sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kit" sbx-template-pi
 ```
 
 ### Build & Run Locally
