@@ -41,17 +41,35 @@ deploy base_variant=BASE_VARIANT pi_version=PI_VERSION:
 run:
     sbx run --template {{image_name}} shell
 
-# Run sandbox using the agent kit (self-contained, with ZAI_API_KEY proxy)
+# --- Kit shortcuts ---
+
+# Generic kit (Anthropic, OpenAI, DeepSeek, ZAI, etc.) — installs pi via npm
 kit-run:
     sbx run --kit ./sbx-kit/ sbx-template-pi
 
-# Validate the kit spec
+# z.ai kit — pre-baked image, ZAI_API_KEY proxy, pi extensions
+kit-run-zai:
+    sbx run --kit ./sbx-kits/pi-zai/ pi-zai
+
+# z.ai kit + extras mixin
+kit-run-zai-full:
+    sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi-zai
+
+# Generic kit + extras mixin
+kit-run-full:
+    sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
+
+# Validate all kits
 kit-validate:
     sbx kit validate ./sbx-kit/
+    sbx kit validate ./sbx-kits/pi-zai/
+    sbx kit validate ./sbx-kits/pi-extras/
 
-# Inspect what the kit provides
+# Inspect all kits
 kit-inspect:
     sbx kit inspect ./sbx-kit/
+    sbx kit inspect ./sbx-kits/pi-zai/
+    sbx kit inspect ./sbx-kits/pi-extras/
 
 # Full cycle: build, load, run
 test base_variant=BASE_VARIANT pi_version=PI_VERSION:
@@ -63,7 +81,7 @@ clean:
     rm -f {{image_name}}.tar
 
 # Push to GHCR
-push registry="ghcr.io/your-org":
+push registry="ghcr.io/shaftoe":
     docker tag {{image_name}} {{registry}}/{{image_name}}:latest
     docker push {{registry}}/{{image_name}}:latest
 

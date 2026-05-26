@@ -1,0 +1,85 @@
+# sbx-template-pi z.ai kit — Pre-baked Pi image with ZAI provider and extensions
+#
+# Uses the pre-baked GHCR image (pi + Node.js + fd, no install step).
+# Wires ZAI_API_KEY through the sandbox proxy.
+# Installs common pi extensions from npm at sandbox creation.
+#
+# Usage:
+#   sbx run --kit ./sbx-kits/pi-zai/ pi-zai
+#   sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi-zai
+#
+# Prerequisites:
+#   export ZAI_API_KEY=zai-...
+
+schemaVersion: "1"
+kind: agent
+name: pi
+displayName: Pi (z.ai)
+description: >
+  Pre-baked Pi coding agent image with ZAI_API_KEY passthrough.
+  Installs pi extensions at creation.
+  Zero-install startup — pi and Node.js are baked into the image.
+
+# ---------------------------------------------------------------------------
+# Image — pre-built Pi image from GitHub Container Registry
+# ---------------------------------------------------------------------------
+agent:
+  image: ghcr.io/shaftoe/sbx-template-pi:latest
+  aiFilename: AGENTS.md
+  persistence: persistent
+  entrypoint:
+    run: [pi]
+
+# ---------------------------------------------------------------------------
+# Network — allow ZAI API, npm registry, GitHub (for extensions & git ops)
+# ---------------------------------------------------------------------------
+network:
+  serviceDomains:
+    api.z.ai: zai
+  serviceAuth:
+    zai:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+  allowedDomains:
+    - api.z.ai:443
+    - registry.npmjs.org              # npm extensions
+    - github.com:443                  # git-based extensions, git clone
+    - api.github.com:443              # gh CLI
+    - pi.dev:443                      # Pi.dev
+    - "*.pi.dev:443"
+
+# ---------------------------------------------------------------------------
+# Credentials — read ZAI_API_KEY from host environment
+# ---------------------------------------------------------------------------
+credentials:
+  sources:
+    zai:
+      env:
+        - ZAI_API_KEY
+
+# ---------------------------------------------------------------------------
+# Environment — ZAI_API_KEY is proxy-managed inside the sandbox.
+# ---------------------------------------------------------------------------
+environment:
+  proxyManaged:
+    - ZAI_API_KEY
+
+# ---------------------------------------------------------------------------
+# Commands — install pi extensions at sandbox creation
+# ---------------------------------------------------------------------------
+commands:
+  install:
+    - command: "pi install npm:@alexanderfortin/pi-zai-usage"
+      user: "1000"
+      description: "Install pi Z.ai extension"
+
+# ---------------------------------------------------------------------------
+# Memory — sandbox orientation
+# ---------------------------------------------------------------------------
+memory: |
+  ## Sandbox environment (z.ai)
+  You are running inside a Docker sandbox (microVM) with the ZAI provider
+  configured as the default. The workspace is mounted at its absolute host
+  path. `sudo` is passwordless; use it for package installs. Docker is
+  available inside the sandbox; containers you start are isolated in the
+  microVM.

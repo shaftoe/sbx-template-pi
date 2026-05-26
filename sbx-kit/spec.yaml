@@ -1,19 +1,24 @@
-# sbx-template-pi kit — Docker Sandbox kit for the Pi coding agent
+# sbx-template-pi — Generic Pi coding agent kit
+#
+# Works with any OpenAI-compatible provider: Anthropic, OpenAI, DeepSeek,
+# Kimi, Mistral, and more.  Pi is installed at sandbox creation via npm.
 #
 # Usage:
-#   sbx run --kit ./sbx-kit/ sbx-template-pi
+#   sbx run --kit ./sbx-kit/ pi
+#   sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kit" pi
 #
-# Prerequisites — set ZAI_API_KEY on your host:
-#   export ZAI_API_KEY=zai-...
-#   # or store it permanently:
-#   sbx secret set ZAI_API_KEY=zai-...
+# Prerequisites — set at least one provider key on your host:
+#   export ANTHROPIC_API_KEY=sk-ant-...
+#   sbx secret set ANTHROPIC_API_KEY=sk-ant-...
 
 schemaVersion: "1"
 kind: agent
 name: sbx-template-pi
-displayName: sbx-template-pi (Pi coding agent)
+DisplayName: Pi (generic)
 description: >
-  Self-contained Pi coding agent image from GHCR with ZAI_API_KEY passthrough.
+  Pi coding agent with multi-provider support.
+  Installs pi via npm at sandbox creation.
+  Works with Anthropic, OpenAI, DeepSeek, Kimi, Mistral, and others.
 
 # ---------------------------------------------------------------------------
 # Image — pre-built Pi image from GitHub Container Registry
@@ -26,48 +31,99 @@ agent:
     run: [pi]
 
 # ---------------------------------------------------------------------------
-# Network — allow the ZAI API and related domains
+# Network — allow common LLM provider APIs and npm registry
 # ---------------------------------------------------------------------------
 network:
-  allowedDomains:
-    - api.z.ai
-    - "*.z.ai"
-    - "pi.dev"
-    - "*.pi.dev"
   serviceDomains:
+    api.anthropic.com: anthropic
+    console.anthropic.com: anthropic
+    api.openai.com: openai
+    api.deepseek.com: deepseek
+    api.mistral.ai: mistral
+    api.moonshot.cn: kimi
     api.z.ai: zai
   serviceAuth:
-    zai:
-      # The ZAI provider in pi typically sends ZAI_API_KEY as a Bearer token
-      # in the Authorization header.  Configure the proxy to swap the
-      # sentinel value for the real credential before the request leaves
-      # the sandbox.
+    anthropic:
+      headerName: x-api-key
+      valueFormat: "%s"
+    openai:
       headerName: Authorization
       valueFormat: "Bearer %s"
+    deepseek:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+    mistral:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+    kimi:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+    zai:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+  allowedDomains:
+    - registry.npmjs.org            # npm install
+    - api.anthropic.com:443         # Anthropic
+    - console.anthropic.com:443
+    - api.openai.com:443            # OpenAI
+    - api.deepseek.com:443          # DeepSeek
+    - api.mistral.ai:443            # Mistral
+    - api.moonshot.cn:443           # Kimi (Moonshot)
+    - api.z.ai:443                  # Z.ai
+    - github.com:443                # git-based extensions
+    - api.github.com:443            # gh CLI
+    - pi.dev:443                    # Pi.dev
+    - "*.pi.dev:443"
 
 # ---------------------------------------------------------------------------
-# Credentials — read ZAI_API_KEY from host environment
+# Credentials — read provider keys from host environment
 # ---------------------------------------------------------------------------
 credentials:
   sources:
+    anthropic:
+      env:
+        - ANTHROPIC_API_KEY
+    openai:
+      env:
+        - OPENAI_API_KEY
+    deepseek:
+      env:
+        - DEEPSEEK_API_KEY
+    mistral:
+      env:
+        - MISTRAL_API_KEY
+    kimi:
+      env:
+        - MOONSHOT_API_KEY
     zai:
       env:
         - ZAI_API_KEY
 
 # ---------------------------------------------------------------------------
-# Environment — ZAI_API_KEY is set to "proxy-managed" inside the sandbox.
-# The proxy intercepts outbound requests and replaces it with the real key
-# in the Authorization header (see serviceAuth above).
+# Environment — provider keys are proxy-managed inside the sandbox.
+# The proxy intercepts outbound requests and replaces the sentinel value
+# with the real credential in the appropriate header.
 # ---------------------------------------------------------------------------
 environment:
   proxyManaged:
+    - ANTHROPIC_API_KEY
+    - OPENAI_API_KEY
+    - DEEPSEEK_API_KEY
+    - MISTRAL_API_KEY
+    - MOONSHOT_API_KEY
     - ZAI_API_KEY
 
 # ---------------------------------------------------------------------------
 # Commands — none needed; everything is baked into the image.
 # ---------------------------------------------------------------------------
-# commands:
-#   install:
-#     - command: "pi --version"
-#       user: "1000"
-#       description: Verify pi is installed
+# Memory — brief sandbox orientation for the agent
+# ---------------------------------------------------------------------------
+memory: |
+  ## Sandbox environment
+  You are running inside a Docker sandbox (microVM). The workspace is mounted
+  at its absolute host path. `sudo` is passwordless; use it for package installs.
+  Docker is available inside the sandbox; containers you start are isolated in
+  the microVM.
+
+  If you need to install additional tools, use `apt-get`, `npm`, `pip`, or
+  download binaries as needed.
