@@ -43,21 +43,10 @@ environment:
 # (none — inherits from the agent kit)
 
 # ---------------------------------------------------------------------------
-# Commands — install gh (GitHub CLI) if not already present (idempotent)
+# Commands — install pi-shared skills and extensions
 # ---------------------------------------------------------------------------
 commands:
   install:
-    - command: >
-        command -v gh >/dev/null 2>&1 || {
-          curl -fsSL https://cli.github.com/packages/githubcli-archive-keyring.gpg |
-            dd of=/usr/share/keyrings/githubcli-archive-keyring.gpg &&
-          chmod go+r /usr/share/keyrings/githubcli-archive-keyring.gpg &&
-          echo "deb [arch=$(dpkg --print-architecture) signed-by=/usr/share/keyrings/githubcli-archive-keyring.gpg] https://cli.github.com/packages stable main" |
-            tee /etc/apt/sources.list.d/github-cli.list > /dev/null &&
-          apt-get update &&
-          apt-get install -y gh;
-        }
-      description: "Install GitHub CLI (gh) if not already present"
     - command: "pi install git:github.com/shaftoe/pi-shared"
       user: "1000"
       description: "Install pi-shared package if not already present"
@@ -75,5 +64,4 @@ commands:
 # ---------------------------------------------------------------------------
 memory: |
   ## Pi extras mixin
-  - `gh` (GitHub CLI) is available for GitHub operations.
   - Git identity is set to `Pi Agent <agent@pi.dev>` by default.

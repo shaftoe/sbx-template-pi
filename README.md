@@ -15,7 +15,7 @@ Images are pushed to GitHub Container Registry on every push to `master` that ch
 
 ## Quick Start
 
-### Using the Generic Kit (pre-baked GHCR image, most providers)
+### Using the Generic Kit (most providers)
 
 The [`sbx-kit/`](sbx-kit/) directory provides a **generic agent kit** that works with Anthropic, OpenAI, DeepSeek, Kimi, Mistral, z.ai, and more. Pi is installed at sandbox creation via npm.
 
@@ -55,6 +55,9 @@ sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
 
 # z.ai kit + extras
 sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi-zai
+
+# z.ai kit + extras directly from the repo
+sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-extras" --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi
 ```
 
 ### Run the Pre-baked Image Directly
@@ -112,8 +115,9 @@ sbx secret set MOONSHOT_API_KEY=...
 ## What's in the Image
 
 - **Node.js 22 LTS** — installed via NodeSource (pi requires `>=22.19.0`)
+- **GitHub CLI** — `gh` is available for GitHub operations
 - **fd-find** — pre-installed so pi doesn't download it at first boot
-- **Pi** — `@earendil-works/pi-coding-agent` installed globally for the `agent` user
+- **Pi** — latest `@earendil-works/pi-coding-agent` installed globally for the `agent` user
 
 ## CI/CD
 
