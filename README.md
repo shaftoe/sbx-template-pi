@@ -45,19 +45,30 @@ sbx run --kit ./sbx-kits/pi-zai/ pi
 sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi
 ```
 
+> **Known limitation:** `sbx` currently requires `--kit` to be specified on **every** run for custom agents ([docker/sbx-kits-contrib#55](https://github.com/docker/sbx-kits-contrib/issues/55)).
+> 
+> **Workarounds for re-running an existing sandbox:**
+> ```bash
+> # Option 1: Run pi directly inside the existing sandbox
+> sbx exec -it <sandbox-name> pi
+>
+> # Option 2: Always pass --kit when re-running
+> sbx run --kit ./sbx-kits/pi-zai/ <sandbox-name>
+> ```
+
 ### Stacking the Extras Mixin
 
 The [`sbx-kits/pi-extras/`](sbx-kits/pi-extras/) mixin adds `fd`, `gh`, git defaults, and sandbox tips on top of any Pi agent kit:
 
 ```bash
-# Generic kit + extras
-sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
-
 # z.ai kit + extras
-sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi-zai
+sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi
 
-# z.ai kit + extras directly from the repo
-sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-extras" --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi
+# Re-run with exec (workaround for agent kit limitation)
+sbx exec -it pi-zai pi
+
+# Generic kit + extras (no limitation, uses built-in agent)
+sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
 ```
 
 ### Run the Pre-baked Image Directly
@@ -94,6 +105,28 @@ docker build -t sbx-template-pi .
 docker save sbx-template-pi -o sbx-template-pi.tar
 sbx template load sbx-template-pi.tar
 sbx run --template sbx-template-pi shell
+```
+
+### Re-running Sandboxes
+
+The `sbx-kit/` (generic) kit registers as a custom agent (`sbx-template-pi`). Re-running requires the `--kit` flag:
+
+```bash
+# First run
+sbx run --kit ./sbx-kit/ sbx-template-pi
+
+# Re-run (kit required each time — known sbx limitation)
+sbx run --kit ./sbx-kit/ sbx-template-pi
+
+# Workaround: exec directly into the sandbox
+sbx exec -it <sandbox-name> pi
+```
+
+Alternatively, run the pre-baked image with the built-in `shell` agent (no `--kit` needed on re-runs):
+
+```bash
+sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
+# then inside the shell: $ pi
 ```
 
 ## Credentials
