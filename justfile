@@ -49,11 +49,11 @@ kit-run:
 
 # z.ai kit — pre-baked image, ZAI_API_KEY proxy, pi extensions
 kit-run-zai:
-    sbx run --kit ./sbx-kits/pi-zai/ pi-zai
+    sbx run --kit ./sbx-kits/pi-zai/ pi
 
 # z.ai kit + extras mixin
 kit-run-zai-full:
-    sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi-zai
+    sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi
 
 # Generic kit + extras mixin
 kit-run-full:
