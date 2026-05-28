@@ -21,7 +21,9 @@ ARG NODE_VERSION=22
 FROM --platform=$BUILDPLATFORM node:${NODE_VERSION}-bookworm-slim AS builder
 
 ARG PI_VERSION=latest
-RUN npm install -g "@earendil-works/pi-coding-agent@${PI_VERSION}" \
+ARG CACHE_BUST
+RUN echo "cache bust: ${CACHE_BUST}" \
+    && npm install -g "@earendil-works/pi-coding-agent@${PI_VERSION}" \
     && npm cache clean --force
 
 # ---------------------------------------------------------------------------

@@ -54,6 +54,7 @@ jobs:
           build-args: |
             BASE_VARIANT=${{ matrix.variant }}
             PI_VERSION=${{ github.event.inputs.pi_version || 'latest' }}
+            CACHE_BUST=${{ github.run_id }}
           platforms: linux/amd64,linux/arm64
           push: true
           tags: |
