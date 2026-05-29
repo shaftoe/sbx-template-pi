@@ -7,7 +7,7 @@ on:
     paths:
       - '**/Dockerfile*'
   schedule:
-    - cron: "0 6 * * 1" # every Monday 06:00 UTC
+    - cron: "0 0 * * *"
   workflow_dispatch:
     inputs:
       pi_version:
