@@ -4,6 +4,8 @@ Pre-baked custom template image for running [Pi](https://pi.dev) inside [Docker 
 
 Pi is baked into the image along with its Node.js runtime and tools — sandboxes start instantly with no install step.
 
+This is meant as a temporary workaround while Pi coding agent gets (hopefully) supported natively. You could also consider joining the lobbying effort at <https://github.com/docker/sbx-releases/issues/34>
+
 ## Published Tags
 
 Images are pushed to GitHub Container Registry on every push to `master` that changes the Dockerfile, weekly via cron, and on manual dispatch.
