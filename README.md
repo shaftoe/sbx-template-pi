@@ -17,6 +17,18 @@ Images are pushed to GitHub Container Registry on every push to `master` that ch
 
 ## Quick Start
 
+### Run the Pre-baked Image Directly
+
+```bash
+sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
+
+# or
+
+sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest-slim shell
+```
+
+Once inside the sandbox, run `pi` to start the coding agent.
+
 ### Using the Generic Kit (most providers)
 
 The [`sbx-kit/`](sbx-kit/) directory provides a **generic agent kit** that works with Anthropic, OpenAI, DeepSeek, Kimi, Mistral, z.ai, and more. Pi is installed at sandbox creation via npm.
@@ -72,14 +84,6 @@ sbx exec -it pi-zai pi
 # Generic kit + extras (no limitation, uses built-in agent)
 sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
 ```
-
-### Run the Pre-baked Image Directly
-
-```bash
-sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
-```
-
-Once inside the sandbox, run `pi` to start the coding agent.
 
 ## Kits Overview
 
