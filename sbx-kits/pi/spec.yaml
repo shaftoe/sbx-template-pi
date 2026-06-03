@@ -1,6 +1,3 @@
-# DEPRECATED: kept for backwards compatibility with shared links.
-# Use ./sbx-kits/pi/spec.yaml
-#
 # sbx-template-pi — Generic Pi coding agent kit
 #
 # Works with any OpenAI-compatible provider: Anthropic, OpenAI, DeepSeek,
@@ -16,7 +13,7 @@
 
 schemaVersion: "1"
 kind: agent
-name: sbx-template-pi
+name: pi
 displayName: Pi (generic)
 description: >
   Pi coding agent with multi-provider support.

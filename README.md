@@ -1,14 +1,14 @@
-# sbx-template-pi
+# Docker sbx template image for Pi coding agent
 
 Pre-baked custom template image for running [Pi](https://pi.dev) inside [Docker Sandboxes](https://docs.docker.com/ai/sandboxes/) (`sbx`).
 
-Pi is baked into the image along with its Node.js runtime and tools — sandboxes start instantly with no install step.
+Pi is baked into the image along with its Node.js runtime and tools — sandboxes start with no install step required.
 
 This is meant as a temporary workaround while Pi coding agent gets (hopefully) supported natively. You could also consider joining the lobbying effort at <https://github.com/docker/sbx-releases/issues/34>
 
 ## Published Tags
 
-Images are pushed to GitHub Container Registry on every push to `master` that changes the Dockerfile, weekly via cron, and on manual dispatch.
+Images are pushed to GitHub Container Registry on every push to `master` that changes the Dockerfile, [daily via cron](.github/workflows/build-and-publish.yml), and on manual dispatch.
 
 | Tag | Base | Description |
 |-----|------|-------------|
@@ -20,43 +20,28 @@ Images are pushed to GitHub Container Registry on every push to `master` that ch
 ### Run the Pre-baked Image Directly
 
 ```bash
-sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
+sbx run -t ghcr.io/shaftoe/pi:latest shell
 
 # or
 
-sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest-slim shell
+sbx run -t ghcr.io/shaftoe/pi:latest-slim shell
 ```
 
 Once inside the sandbox, run `pi` to start the coding agent.
 
 ### Using the Generic Kit (most providers)
 
-The [`sbx-kit/`](sbx-kit/) directory provides a **generic agent kit** that works with Anthropic, OpenAI, DeepSeek, Kimi, Mistral, z.ai, and more. Pi is installed at sandbox creation via npm.
+The [`sbx-kits/pi/`](sbx-kits/pi/) directory provides a **generic agent kit** that works with Anthropic, OpenAI, DeepSeek, Kimi, Mistral, z.ai, and more. Pi is installed at sandbox creation via npm.
 
 ```bash
 # Set at least one provider key on your host
 export ANTHROPIC_API_KEY=sk-ant-...
 
 # Run from a local clone
-sbx run --kit ./sbx-kit/ sbx-template-pi
+sbx run --kit ./sbx-kits/pi pi
 
 # ...or directly from the GitHub repo
-sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kit" sbx-template-pi
-```
-
-### Using the z.ai Kit
-
-The [`sbx-kits/pi-zai/`](sbx-kits/pi-zai/) kit uses the pre-baked GHCR image with `ZAI_API_KEY` passthrough and installs pi extensions.
-
-```bash
-# Set your z.ai key
-export ZAI_API_KEY=zai-...
-
-# Run from a local clone
-sbx run --kit ./sbx-kits/pi-zai/ pi
-
-# ...or directly from the GitHub repo
-sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi
+sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi" pi
 ```
 
 > **Known limitation:** `sbx` currently requires `--kit` to be specified on **every** run for custom agents ([docker/sbx-kits-contrib#55](https://github.com/docker/sbx-kits-contrib/issues/55)).
@@ -64,41 +49,33 @@ sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/p
 > **Workarounds for re-running an existing sandbox:**
 > ```bash
 > # Option 1: Run pi directly inside the existing sandbox
+> sbx ls # list running sandboxes
 > sbx exec -it <sandbox-name> pi
 >
 > # Option 2: Always pass --kit when re-running
-> sbx run --kit ./sbx-kits/pi-zai/ <sandbox-name>
+> sbx run --kit ./sbx-kits/pi/ pi
 > ```
 
 ### Stacking the Extras Mixin
 
-The [`sbx-kits/pi-extras/`](sbx-kits/pi-extras/) mixin adds `fd`, `gh`, git defaults, and sandbox tips on top of any Pi agent kit:
+The [`sbx-kits/pi-extras/`](sbx-kits/pi-extras/) mixin adds a couple of Pi extensions to provide an example on how to use mixin kits, you can add it to any agent kit just adding another `--kit` flag:
 
 ```bash
-# z.ai kit + extras
-sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi
+# Generic kit + extras
+sbx run --kit ./sbx-kits/pi --kit ./sbx-kits/pi-extras/ pi
 
-# Re-run with exec (workaround for agent kit limitation)
-sbx exec -it pi-zai pi
-
-# Generic kit + extras (no limitation, uses built-in agent)
-sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
+# With GitHub urls
+sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi" --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-extras" pi
 ```
 
-## Kits Overview
-
-| Kit | Kind | Image | Providers | Extensions |
-|-----|------|-------|-----------|------------|
-| `sbx-kit/` (generic) | agent | `shell-docker` (npm install) | Anthropic, OpenAI, DeepSeek, Mistral, Kimi, z.ai | — |
-| `sbx-kits/pi-zai/` | agent | `ghcr.io/shaftoe/sbx-template-pi` (pre-baked) | z.ai | npm + git extensions |
-| `sbx-kits/pi-extras/` | mixin | *(inherits from agent kit)* | *(inherits)* | fd, gh CLI, git config |
+Refer to <https://docs.docker.com/ai/sandboxes/customize/kits/> for more details.
 
 ### Build & Run Locally
 
 ```bash
 # Using [just](https://just.systems):
 just deploy          # build + load into sbx
-just run             # sbx run --template sbx-template-pi shell
+just run             # sbx run --template pi shell
 just kit-run         # generic kit (npm install)
 just kit-run-zai     # z.ai kit (pre-baked image)
 just kit-run-full    # generic kit + extras mixin
@@ -107,48 +84,10 @@ just kit-validate    # validate all kits
 just kit-inspect     # inspect all kits
 
 # Or manually:
-docker build -t sbx-template-pi .
-docker save sbx-template-pi -o sbx-template-pi.tar
-sbx template load sbx-template-pi.tar
-sbx run --template sbx-template-pi shell
-```
-
-### Re-running Sandboxes
-
-The `sbx-kit/` (generic) kit registers as a custom agent (`sbx-template-pi`). Re-running requires the `--kit` flag:
-
-```bash
-# First run
-sbx run --kit ./sbx-kit/ sbx-template-pi
-
-# Re-run (kit required each time — known sbx limitation)
-sbx run --kit ./sbx-kit/ sbx-template-pi
-
-# Workaround: exec directly into the sandbox
-sbx exec -it <sandbox-name> pi
-```
-
-Alternatively, run the pre-baked image with the built-in `shell` agent (no `--kit` needed on re-runs):
-
-```bash
-sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
-# then inside the shell: $ pi
-```
-
-## Credentials
-
-```bash
-# ZAI provider (used by pi-zai kit, also supported by generic kit)
-export ZAI_API_KEY=zai-...
-
-# Anthropic
-sbx secret set ANTHROPIC_API_KEY=sk-ant-...
-
-# Other providers supported by the generic kit
-sbx secret set OPENAI_API_KEY=sk-...
-sbx secret set DEEPSEEK_API_KEY=sk-...
-sbx secret set MISTRAL_API_KEY=...
-sbx secret set MOONSHOT_API_KEY=...
+docker build -t pi .
+docker save pi -o pi.tar
+sbx template load pi.tar
+sbx run --template pi shell
 ```
 
 ## What's in the Image
