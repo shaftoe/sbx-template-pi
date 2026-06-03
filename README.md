@@ -20,11 +20,11 @@ Images are pushed to GitHub Container Registry on every push to `master` that ch
 ### Run the Pre-baked Image Directly
 
 ```bash
-sbx run -t ghcr.io/shaftoe/pi:latest shell
+sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest shell
 
 # or
 
-sbx run -t ghcr.io/shaftoe/pi:latest-slim shell
+sbx run -t ghcr.io/shaftoe/sbx-template-pi:latest-slim shell
 ```
 
 Once inside the sandbox, run `pi` to start the coding agent.
