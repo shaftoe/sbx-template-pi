@@ -70,26 +70,6 @@ sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/p
 
 Refer to <https://docs.docker.com/ai/sandboxes/customize/kits/> for more details.
 
-### Build & Run Locally
-
-```bash
-# Using [just](https://just.systems):
-just deploy          # build + load into sbx
-just run             # sbx run --template pi shell
-just kit-run         # generic kit (npm install)
-just kit-run-zai     # z.ai kit (pre-baked image)
-just kit-run-full    # generic kit + extras mixin
-just kit-run-zai-full # z.ai kit + extras mixin
-just kit-validate    # validate all kits
-just kit-inspect     # inspect all kits
-
-# Or manually:
-docker build -t pi .
-docker save pi -o pi.tar
-sbx template load pi.tar
-sbx run --template pi shell
-```
-
 ## What's in the Image
 
 - **Node.js 22 LTS** — installed via NodeSource (pi requires `>=22.19.0`)

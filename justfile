@@ -1,9 +1,9 @@
-# sbx-template-pi
+# pi
 # https://just.systems/man/en/
 
 set dotenv-load
 
-image_name := "sbx-template-pi"
+image_name := "pi"
 BASE_VARIANT := "shell-docker"
 PI_VERSION := "latest"
 
@@ -43,32 +43,28 @@ run:
 
 # --- Kit shortcuts ---
 
-# Generic kit (Anthropic, OpenAI, DeepSeek, ZAI, etc.) — installs pi via npm
-kit-run:
-    sbx run --kit ./sbx-kit/ sbx-template-pi
+# base pre-baked image
+kit-run-base:
+    sbx run --kit ./sbx-kits/pi-base/ pi
 
-# z.ai kit — pre-baked image, ZAI_API_KEY proxy, pi extensions
-kit-run-zai:
-    sbx run --kit ./sbx-kits/pi-zai/ pi
+# base kit + extras mixin
+kit-run-base-full:
+    sbx run --kit ./sbx-kits/pi-base/ --kit ./sbx-kits/pi-extras/ pi
 
-# z.ai kit + extras mixin
-kit-run-zai-full:
-    sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi
-
-# Generic kit + extras mixin
-kit-run-full:
-    sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ sbx-template-pi
+# Generic kit + extras mixin (legacy)
+kit-run-legacy:
+    sbx run --kit ./sbx-kits/pi pi
 
 # Validate all kits
 kit-validate:
-    sbx kit validate ./sbx-kit/
-    sbx kit validate ./sbx-kits/pi-zai/
+    sbx kit validate ./sbx-kits/pi/ # legacy
+    sbx kit validate ./sbx-kits/pi-base/
     sbx kit validate ./sbx-kits/pi-extras/
 
 # Inspect all kits
 kit-inspect:
-    sbx kit inspect ./sbx-kit/
-    sbx kit inspect ./sbx-kits/pi-zai/
+    sbx kit inspect ./sbx-kits/pi/ # legacy
+    sbx kit inspect ./sbx-kits/pi-base/
     sbx kit inspect ./sbx-kits/pi-extras/
 
 # Full cycle: build, load, run
@@ -78,7 +74,7 @@ test base_variant=BASE_VARIANT pi_version=PI_VERSION:
 
 # Remove the exported tar file
 clean:
-    rm -f {{image_name}}.tar
+    rm -f *.tar
 
 # Push to GHCR
 push registry="ghcr.io/shaftoe":

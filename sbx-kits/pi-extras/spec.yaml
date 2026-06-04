@@ -26,21 +26,61 @@ description: >
 # ---------------------------------------------------------------------------
 credentials:
   sources:
-    github:
+    deepseek:
       env:
-        - GITHUB_TOKEN
+        - DEEPSEEK_API_KEY
+    freestyle:
+      env:
+        - FREESTYLE_API_KEY
+    stepfun:
+      env:
+        - STEP_API_KEY
+    tavily:
+      env:
+        - TAVILY_API_KEY
+    zai:
+      env:
+        - ZAI_API_KEY
 
 # ---------------------------------------------------------------------------
-# Environment — GITHUB_TOKEN is proxy-managed inside the sandbox.
+# Environment — proxy-managed secrets injected into the sandbox.
 # ---------------------------------------------------------------------------
 environment:
   proxyManaged:
-    - GITHUB_TOKEN
+    - DEEPSEEK_API_KEY
+    - FREESTYLE_API_KEY
+    - STEP_API_KEY
+    - TAVILY_API_KEY
+    - ZAI_API_KEY
 
 # ---------------------------------------------------------------------------
 # Network — additional domains this mixin needs
 # ---------------------------------------------------------------------------
-# (none — inherits from the agent kit)
+network:
+  serviceDomains:
+    api.tavily.com: tavily
+    api.deepseek.com: deepseek
+    api.freestyle.sh: freestyle
+    api.stepfun.ai: stepfun
+  serviceAuth:
+    tavily:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+    deepseek:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+    freestyle:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+    stepfun:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+  allowedDomains:
+    - api.z.ai:443
+    - api.tavily.com:443
+    - api.deepseek.com:443
+    - api.freestyle.sh:443
+    - api.stepfun.ai:443
 
 # ---------------------------------------------------------------------------
 # Commands — install pi-shared skills and extensions
@@ -49,10 +89,20 @@ commands:
   install:
     - command: "pi install git:github.com/shaftoe/pi-shared"
       user: "1000"
-      description: "Install pi-shared package if not already present"
+    - command: "pi install npm:@alexanderfortin/pi-zai-usage"
+      user: "1000"
+    - command: "pi install npm:@alexanderfortin/pi-freestyle-sandbox"
+      user: "1000"
+    - command: "pi install npm:@alexanderfortin/pi-tavily-tools"
+      user: "1000"
+    - command: "pi install npm:@alexanderfortin/pi-token-usage"
+      user: "1000"
+    - command: "pi install npm:@alexanderfortin/pi-deepseek-usage"
+      user: "1000"
+    - command: "pi install npm:@alexanderfortin/pi-stepfun-usage"
+      user: "1000"
     - command: "pi install npm:@alexanderfortin/pi-loaded-tools"
       user: "1000"
-      description: "Install pi-loaded-tools extension if not already present"
 
   startup:
     - command: ["sh", "-c", 'git config --global user.email "agent@pi.dev" 2>/dev/null; git config --global user.name "Pi Agent" 2>/dev/null']

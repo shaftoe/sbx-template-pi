@@ -1,0 +1,60 @@
+# sbx-template-pi z.ai kit — Pre-baked Pi image with ZAI provider and extensions
+#
+# Uses the pre-baked GHCR image (pi + Node.js + fd, no install step).
+# Wires ZAI_API_KEY through the sandbox proxy.
+# Installs common pi extensions from npm at sandbox creation.
+#
+# Usage:
+#   sbx run --kit ./sbx-kits/pi-zai/ pi-zai
+#   sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" pi-zai
+#
+# Prerequisites:
+#   export GITHUB_TOKEN=ghp_...
+
+schemaVersion: "1"
+kind: agent
+name: pi
+displayName: Pi
+description: >
+  Pre-baked Pi coding agent image with GITHUB_TOKEN passthrough.
+  Zero-install startup — pi and Node.js are baked into the image.
+
+agent:
+  image: ghcr.io/shaftoe/sbx-template-pi:latest
+  aiFilename: AGENTS.md
+  entrypoint:
+    run: [pi]
+
+network:
+  serviceDomains:
+    api.github.com: github
+  serviceAuth:
+    github:
+      headerName: Authorization
+      valueFormat: "Bearer %s"
+  allowedDomains:
+    - registry.npmjs.org # npm extensions
+    - github.com:443     # git-based extensions, git clone
+    - api.github.com:443 # gh CLI
+    - pi.dev:443         # Pi.dev
+    - "*.pi.dev:443"
+
+credentials:
+  sources:
+    github:
+      env:
+        - GITHUB_TOKEN
+
+environment:
+  proxyManaged:
+    - GITHUB_TOKEN
+
+# ---------------------------------------------------------------------------
+# Memory — sandbox orientation
+# ---------------------------------------------------------------------------
+memory: |
+  ## Sandbox environment
+  You are running inside a Docker sandbox (microVM).
+  Networking is restricted to allowed domains only.
+  The workspace is mounted at its absolute host path.
+  Docker is available inside the sandbox; containers you start are isolated in the microVM.
