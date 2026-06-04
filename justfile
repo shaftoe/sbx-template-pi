@@ -53,17 +53,17 @@ kit-run-base-full:
 
 # Generic kit + extras mixin (legacy)
 kit-run-legacy:
-    sbx run --kit ./sbx-kits/pi pi
+    sbx run --kit ./sbx-kit sbx-template-pi
 
 # Validate all kits
 kit-validate:
-    sbx kit validate ./sbx-kits/pi/ # legacy
+    sbx kit validate ./sbx-kits/pi/
     sbx kit validate ./sbx-kits/pi-base/
     sbx kit validate ./sbx-kits/pi-extras/
 
 # Inspect all kits
 kit-inspect:
-    sbx kit inspect ./sbx-kits/pi/ # legacy
+    sbx kit inspect ./sbx-kits/pi/
     sbx kit inspect ./sbx-kits/pi-base/
     sbx kit inspect ./sbx-kits/pi-extras/
 

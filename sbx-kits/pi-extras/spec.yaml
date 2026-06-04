@@ -1,15 +1,13 @@
-# pi-extras mixin — Shared skills, config, and quality-of-life for any Pi kit
-#
-# This is a **mixin** kit — it stacks on top of an agent kit (pi or pi-zai)
+# This is a **mixin** kit — it stacks on top of an agent kit (pi or pi-base)
 # to add shared workspace files, skills, and a custom AGENTS.md supplement.
 #
 # Usage:
 #   sbx run --kit ./sbx-kit/ --kit ./sbx-kits/pi-extras/ pi
-#   sbx run --kit ./sbx-kits/pi-zai/ --kit ./sbx-kits/pi-extras/ pi-zai
+#   sbx run --kit ./sbx-kits/pi-base/ --kit ./sbx-kits/pi-extras/ pi
 #
 # From GitHub:
 #   sbx run \
-#     --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-zai" \
+#     --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-base" \
 #     --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-extras" \
 #     pi
 
@@ -21,9 +19,6 @@ description: >
   Stacks on any Pi agent kit.  Adds shared skills, workspace configs,
   and git safety settings for the sandbox environment.
 
-# ---------------------------------------------------------------------------
-# Credentials — read GITHUB_TOKEN from host environment
-# ---------------------------------------------------------------------------
 credentials:
   sources:
     deepseek:
@@ -108,10 +103,3 @@ commands:
     - command: ["sh", "-c", 'git config --global user.email "agent@pi.dev" 2>/dev/null; git config --global user.name "Pi Agent" 2>/dev/null']
       user: "1000"
       description: "Set default git identity for the agent user"
-
-# ---------------------------------------------------------------------------
-# Memory — appended to the agent's memory file
-# ---------------------------------------------------------------------------
-memory: |
-  ## Pi extras mixin
-  - Git identity is set to `Pi Agent <agent@pi.dev>` by default.
