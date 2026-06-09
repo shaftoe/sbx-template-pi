@@ -12,12 +12,13 @@ displayName: Pi
 description: >
   Pre-baked Pi coding agent image with GITHUB_TOKEN passthrough.
   Zero-install startup — pi and Node.js are baked into the image.
+  Auto approve mode enabled.
 
 agent:
   image: ghcr.io/shaftoe/sbx-template-pi:latest
   aiFilename: AGENTS.md
   entrypoint:
-    run: [pi]
+    run: [pi, --approve]
 
 network:
   serviceDomains:
