@@ -44,17 +44,24 @@ sbx run --kit ./sbx-kits/pi pi
 sbx run --kit "git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi" pi
 ```
 
-> **Known limitation:** `sbx` currently requires `--kit` to be specified on **every** run for custom agents ([docker/sbx-kits-contrib#55](https://github.com/docker/sbx-kits-contrib/issues/55)).
-> 
-> **Workarounds for re-running an existing sandbox:**
-> ```bash
-> # Option 1: Run pi directly inside the existing sandbox
-> sbx ls # list running sandboxes
-> sbx exec -it <sandbox-name> pi
->
-> # Option 2: Always pass --kit when re-running
-> sbx run --kit ./sbx-kits/pi/ pi
-> ```
+#### Known limitation
+
+`sbx` currently requires `--kit` to be specified on **every** run for custom agents ([docker/sbx-kits-contrib#55](https://github.com/docker/sbx-kits-contrib/issues/55)).
+
+**Workarounds for re-running an existing sandbox:**
+
+```bash
+# Option 1: Run pi directly inside the existing sandbox
+sbx ls # list running sandboxes
+sbx exec -it <sandbox-name> pi
+
+# Option 2: Always pass --kit when re-running
+sbx run --kit ./sbx-kits/pi/ pi
+
+# Option 3: setup aliases, e.g:
+alias sbx-new='sbx run --kit git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-base/ --kit git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-extras/ pi' # create a new sandbox
+alias sbx-attach='sbx run --kit git+https://github.com/shaftoe/sbx-template-pi.git#dir=sbx-kits/pi-base/ pi' # attach to an existing sandbox
+```
 
 ### Stacking the Extras Mixin
 
